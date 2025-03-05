@@ -1,0 +1,12 @@
+.PlayerSpace {
+    height: 40%;
+    overflow: auto;
+}
+
+.deckText {
+    transform: rotate(-90deg);
+}
+
+.discardText {
+    transform: rotate(-90deg);
+}
