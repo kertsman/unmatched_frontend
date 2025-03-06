@@ -6,8 +6,8 @@ export default function WelcomePage() {
   const navigate = useNavigate();
 
   const navigateToSetupPage = useCallback(
-    (mode: "create" | "join") => {
-      navigate(`/setup?mode=${mode}`);
+    (searchParams: string) => {
+      navigate(`/setup?${searchParams}`);
     },
     [navigate]
   );
@@ -16,11 +16,22 @@ export default function WelcomePage() {
     <>
       <h1>Wellcome</h1>
       <div style={{ display: "flex", flexDirection: "column" }}>
-        <Button onClick={() => navigateToSetupPage("create")} color="secondary">
+        <Button
+          onClick={() => {
+            const id = Math.floor(Math.random() * (10000 - 1) + 1);
+            navigateToSetupPage(`mode=create&id=${id}`);
+          }}
+          color="secondary"
+        >
           Создать комнату
         </Button>
 
-        <Button onClick={() => navigateToSetupPage("join")} color="secondary">
+        <Button
+          onClick={() => {
+            navigateToSetupPage("mode=join");
+          }}
+          color="secondary"
+        >
           Присоединиться
         </Button>
       </div>
