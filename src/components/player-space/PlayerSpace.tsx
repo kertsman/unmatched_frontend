@@ -37,6 +37,24 @@ function discardCard(
   );
 }
 
+function playCard(
+  playedCardId: string,
+  playersHand: CardBase[],
+  dispatch: Dispatch<UnknownAction>
+) {
+  const playedCard = playersHand.find((card) => card.id === playedCardId);
+  const newPlayersHand = playersHand.filter((card) => card.id !== playedCardId);
+
+  dispatch(actions.setPlayersHand(newPlayersHand));
+
+  socket.emit(
+    "player-played-card",
+    localStorage.getItem("roomId") || "",
+    localStorage.getItem("name"),
+    playedCard
+  );
+}
+
 export default function PlayerSpace() {
   const player = useSelector((state) => state.gameBoard.player);
   const [drawerIsOpen, setDrawerIsOpen] = useState(false);
@@ -82,8 +100,6 @@ export default function PlayerSpace() {
           }}
         >
           {handCards.map((card) => {
-            console.log(card.image);
-
             return (
               <Card
                 onClick={() => {
@@ -120,7 +136,6 @@ export default function PlayerSpace() {
         onClose={() => {
           setCardIdToShowInDrawer(null);
           setDrawerIsOpen(false);
-          console.log("close");
         }}
         onOpen={() => {}}
       >
@@ -154,7 +169,14 @@ export default function PlayerSpace() {
               >
                 Сбросить
               </Button>
-              <Button onClick={() => {}} variant="outlined" color="success">
+              <Button
+                onClick={() => {
+                  playCard(cardIdToShowInDrawer, handCards, dispatch);
+                  setDrawerIsOpen(false);
+                }}
+                variant="outlined"
+                color="success"
+              >
                 Сыграть
               </Button>
             </div>

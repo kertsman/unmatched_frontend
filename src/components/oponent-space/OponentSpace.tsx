@@ -3,7 +3,6 @@ import classes from "./OponentSpace.module.css";
 
 export default function OponentSpace() {
   const oponent = useSelector((state) => {
-    console.log(state);
     return state.gameBoard.oponent;
   });
   return (

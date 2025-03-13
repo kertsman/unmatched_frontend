@@ -7,6 +7,10 @@ import { configureStore } from "@reduxjs/toolkit";
 export const store = configureStore({
   reducer: { gameBoard: counterSlice.reducer },
 });
+export type RootState = ReturnType<typeof store.getState>;
+// Inferred type: {posts: PostsState, comments: CommentsState, users: UsersState}
+export type AppDispatch = typeof store.dispatch;
+
 function App() {
   const dispatch = useDispatch();
   socket.on("game-state-changed", (data) => {
@@ -14,8 +18,8 @@ function App() {
     dispatch(actions.setGameState(data));
   });
 
-  socket.on("oponent-performed-action", (data) => {
-    console.log("oponent-performed-action");
+  socket.on("opponent-or-battlespace-changed", (data) => {
+    console.log("opponent-or-battlespace-changed");
     dispatch(actions.setOponentAndBattleSpace(data));
   });
   return (

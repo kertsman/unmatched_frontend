@@ -10,14 +10,9 @@ export default function GameBoard() {
   const [playersCard, setPlayersCard] = useState([]);
 
   useEffect(() => {
-    console.log("emitted");
-
     function emit(socket, event, arg) {
       socket.timeout(1000).emit(event, arg, (err) => {
         if (err) {
-          // no ack from the server, let's retry
-          console.log("retry");
-
           emit(socket, event, arg);
         }
       });
