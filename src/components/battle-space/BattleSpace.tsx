@@ -6,7 +6,6 @@ import { socket } from "../../main";
 import { Dispatch, useState } from "react";
 import { UnknownAction } from "@reduxjs/toolkit";
 import { actions, CardBase, IBattleSpace } from "../../store/store";
-import { RootState } from "@reduxjs/toolkit/query";
 import { useAppSelector } from "../../hooks/hooks";
 
 function discardCards(
@@ -21,7 +20,7 @@ function discardCards(
   dispatch(actions.setPlayersDiscard(newPlayersDiscard));
 
   const newBattleSpace = structuredClone(battleSpace);
-  newBattleSpace.player.splice(0, battleSpace.player.length);
+  newBattleSpace.player.cards.splice(0, battleSpace.player.cards.length);
 
   dispatch(actions.setBattleSpace(newBattleSpace));
 
@@ -32,27 +31,25 @@ function discardCards(
   );
 }
 
-function changeVisibilityOfCardsToOpponent(
-  dispatch: Dispatch<UnknownAction>,
-  visibility: boolean
-) {
+function changeVisibilityOfCardsToOpponent(visibility: boolean) {
   socket.emit(
     "change-visibility-of-cards-to-opponent",
     localStorage.getItem("roomId"),
-    localStorage.getItem("name")
+    localStorage.getItem("name"),
+    visibility
   );
 }
 
 export default function BattleSpace() {
   const dispatch = useDispatch();
   const battleSpace = useAppSelector((state) => state.gameBoard.battleSpace);
-  console.log(battleSpace);
+  console.dir(battleSpace);
 
   const discardedCards = useAppSelector(
     (state) => state.gameBoard.player.discard
   );
   const [drawerIsOpen, setDrawerIsOpen] = useState(false);
-  const [cardIdToShowInDrawer, setCardIdToShowInDrawer] = useState(null);
+  // const [cardIdToShowInDrawer, setCardIdToShowInDrawer] = useState(null);
   console.log(battleSpace);
 
   return (
@@ -77,11 +74,11 @@ export default function BattleSpace() {
             }}
           >
             {battleSpace?.oponent &&
-              battleSpace?.oponent.map((opCard) => (
+              battleSpace?.oponent[0]?.cards.map((opCard) => (
                 <Card
-                  image={"http://localhost:3000/" + opCard.image}
+                  image={import.meta.env.VITE_BACKEND_ENDPOINT + opCard.image}
                   show={
-                    battleSpace?.oponent.isFaceDownForOponent
+                    battleSpace?.oponent[0].isFaceDownForOponent
                       ? "cover"
                       : "image"
                   }
@@ -97,9 +94,11 @@ export default function BattleSpace() {
             }}
           >
             {battleSpace?.player &&
-              battleSpace?.player.map((playerCard) => (
+              battleSpace?.player.cards.map((playerCard) => (
                 <Card
-                  image={"http://localhost:3000/" + playerCard.image}
+                  image={
+                    import.meta.env.VITE_BACKEND_ENDPOINT + playerCard.image
+                  }
                   onClick={() => {
                     setDrawerIsOpen((prev) => !prev);
                   }}
@@ -113,7 +112,7 @@ export default function BattleSpace() {
         anchor={"bottom"}
         open={drawerIsOpen}
         onClose={() => {
-          setCardIdToShowInDrawer(null);
+          // setCardIdToShowInDrawer(null);
           setDrawerIsOpen(false);
         }}
         onOpen={() => {}}
@@ -164,7 +163,7 @@ export default function BattleSpace() {
               discardCards(
                 dispatch,
                 discardedCards,
-                battleSpace.player,
+                battleSpace.player.cards,
                 battleSpace
               );
               setDrawerIsOpen(false);
@@ -176,13 +175,15 @@ export default function BattleSpace() {
           </Button>
           <Button
             onClick={() => {
-              // playCard(cardIdToShowInDrawer, handCards, dispatch);
+              changeVisibilityOfCardsToOpponent(
+                !battleSpace.player.isFaceDownForOponent
+              );
               setDrawerIsOpen(false);
             }}
             variant="outlined"
             color="success"
           >
-            {battleSpace.player[0]?.isFaceDownForOponent
+            {battleSpace.player.isFaceDownForOponent
               ? "Показать карты опоненту"
               : "Скрыть карты от опонента"}
           </Button>

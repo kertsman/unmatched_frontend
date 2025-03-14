@@ -2,10 +2,11 @@ import { Button, SwipeableDrawer } from "@mui/material";
 import Card from "../card/Card";
 import classes from "./PlayerSpace.module.css";
 import { Dispatch, useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { socket } from "../../main";
 import { actions, CardBase } from "../../store/store";
 import { UnknownAction } from "@reduxjs/toolkit";
+import { useAppSelector } from "../../hooks/hooks";
 
 function discardCard(
   dispatch: Dispatch<UnknownAction>,
@@ -56,16 +57,16 @@ function playCard(
 }
 
 export default function PlayerSpace() {
-  const player = useSelector((state) => state.gameBoard.player);
+  const player = useAppSelector((state) => state.gameBoard.player);
   const [drawerIsOpen, setDrawerIsOpen] = useState(false);
   const [cardIdToShowInDrawer, setCardIdToShowInDrawer] = useState<string>("");
   const [whatToShowInDrower, setWhatToShowInDrower] = useState<
     "cardInHand" | "deckControlls" | null
   >(null);
 
-  const [discardCards, setDiscardCards] = useState([]);
+  const [discardCards] = useState([]);
   const [deckCards, setDeckCards] = useState<CardBase[]>([]);
-  const [handCards, setHandCards] = useState([]);
+  const [handCards, setHandCards] = useState<CardBase[]>([]);
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -107,7 +108,7 @@ export default function PlayerSpace() {
                   setWhatToShowInDrower("cardInHand");
                   setCardIdToShowInDrawer(card.id);
                 }}
-                image={"http://localhost:3000/" + card.image}
+                image={import.meta.env.VITE_BACKEND_ENDPOINT + card.image}
               />
             );
           })}
@@ -116,7 +117,6 @@ export default function PlayerSpace() {
           onClick={() => {
             setDrawerIsOpen(true);
             setWhatToShowInDrower("deckControlls");
-            setCardIdToShowInDrawer(card.id);
           }}
           style={{
             backgroundColor: "#007FFF",
@@ -134,7 +134,7 @@ export default function PlayerSpace() {
         anchor={"bottom"}
         open={drawerIsOpen}
         onClose={() => {
-          setCardIdToShowInDrawer(null);
+          setCardIdToShowInDrawer("");
           setDrawerIsOpen(false);
         }}
         onOpen={() => {}}
@@ -147,7 +147,7 @@ export default function PlayerSpace() {
               .map((card) => {
                 return (
                   <Card
-                    image={"http://localhost:3000/" + card.image}
+                    image={import.meta.env.VITE_BACKEND_ENDPOINT + card.image}
                     width="250px"
                     height="400px"
                   />

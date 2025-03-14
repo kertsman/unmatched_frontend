@@ -3,8 +3,8 @@ import classes from "./Card.module.css";
 export default function Card({
   width,
   height,
-  image = "http://localhost:3000/alice/Feint.png",
-  cover = "http://localhost:3000/alice/cover.png",
+  image = import.meta.env.VITE_BACKEND_ENDPOINT + "alice/Feint.png",
+  cover = import.meta.env.VITE_BACKEND_ENDPOINT + "alice/cover.png",
   show = "image",
   onClick = () => {},
 }: {

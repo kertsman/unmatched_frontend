@@ -7,7 +7,7 @@ function getInitialsState(): GameBoardState {
       deck: [],
     },
     battleSpace: {
-      player: [],
+      player: { name: "", cards: [], isFaceDownForOponent: false },
       oponent: [],
     },
     oponent: {
@@ -51,11 +51,14 @@ export const counterSlice = createSlice({
         (user) => user.name !== localStorage.getItem("name")
       );
       if (battleSpaceUser) {
-        state.battleSpace.player = battleSpaceUser?.cards;
+        state.battleSpace.player.cards = battleSpaceUser?.cards;
+        state.battleSpace.player.isFaceDownForOponent =
+          battleSpaceUser?.isFaceDownForOponent;
+        state.battleSpace.player.name = battleSpaceUser?.name;
       }
 
       if (battleSpaceOpponent) {
-        state.battleSpace.oponent = battleSpaceOpponent?.cards;
+        state.battleSpace.oponent = [battleSpaceOpponent];
       }
 
       const oponent = room.players.find(
@@ -77,26 +80,25 @@ export const counterSlice = createSlice({
       );
 
       if (battleSpaceOpponent) {
-        state.battleSpace.oponent = battleSpaceOpponent?.cards as any;
+        state.battleSpace.oponent = [battleSpaceOpponent];
       }
       if (battleSpaceUser) {
-        state.battleSpace.player = battleSpaceUser?.cards as any;
+        state.battleSpace.player = battleSpaceUser;
       }
 
       const oponent = room.players.find(
         (player) => player.name !== localStorage.getItem("name")
       );
       if (oponent) {
-        state.oponent.deck = oponent?.deck as any;
-        state.oponent.discard = oponent?.discard as any;
-        state.oponent.hand = oponent?.hand as any;
+        state.oponent.deck = oponent.deck;
+        state.oponent.discard = oponent.discard;
+        state.oponent.hand = oponent.hand;
       }
     },
     setBattleSpace: (state, payload) => {
       const battleSpace: IBattleSpace = payload.payload;
-      debugger;
-      state.battleSpace.oponent = battleSpace?.oponent as any;
-      state.battleSpace.player = battleSpace?.player as any;
+      state.battleSpace.oponent = battleSpace?.oponent;
+      state.battleSpace.player = battleSpace?.player;
     },
   },
 });
@@ -141,7 +143,7 @@ interface GameBoardState {
 }
 
 export interface IBattleSpace {
-  player: BattleParticipant[];
+  player: BattleParticipant;
   oponent: BattleParticipant[];
 }
 

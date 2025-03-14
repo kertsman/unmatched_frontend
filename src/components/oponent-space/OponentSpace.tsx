@@ -1,8 +1,8 @@
-import { useSelector } from "react-redux";
 import classes from "./OponentSpace.module.css";
+import { useAppSelector } from "../../hooks/hooks";
 
 export default function OponentSpace() {
-  const oponent = useSelector((state) => {
+  const oponent = useAppSelector((state) => {
     return state.gameBoard.oponent;
   });
   return (
